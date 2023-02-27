@@ -59,22 +59,21 @@ public class TankTurret : MonoBehaviour
     {
         //Tower
         Vector3 lp = tower.InverseTransformPoint(aim.position);
-        lp.z = 0;
+        lp.y = 0;
         Vector3 lpg = tower.TransformPoint(lp);
-        tower.rotation = Quaternion.RotateTowards(tower.rotation, 
-            Quaternion.LookRotation((lpg - tower.position).normalized, tower.up), 
-            horizontalRotationSpeed * Time.deltaTime);
+        tower.rotation = Quaternion.RotateTowards(tower.rotation, Quaternion.LookRotation((lpg - tower.position).normalized, tower.up), 
+        horizontalRotationSpeed * Time.deltaTime);
 
         //Mask
-        //mask.localRotation = Quaternion.identity;
+        mask.localRotation = Quaternion.identity;
 
-        //lp = mask.InverseTransformPoint(aim.position);
-        //lp.x = 0;
-        //lpg = mask.TransformPoint(lp);
+        lp = mask.InverseTransformPoint(aim.position);
+        lp.x = 0;
+        lpg = mask.TransformPoint(lp);
 
-        //float targetAngle = -Vector3.SignedAngle((lpg - mask.position).normalized, mask.forward, mask.right);
-        //targetAngle = Mathf.Clamp(targetAngle, maxTopAngle, maxButtonAngle);
-        //maskCurrentAngle = Mathf.MoveTowards(maskCurrentAngle, targetAngle, Time.deltaTime * verticalRotationSpeed);
-        //mask.localRotation = Quaternion.Euler(maskCurrentAngle, 0, 0);
+        float targetAngle = -Vector3.SignedAngle((lpg - mask.position).normalized, mask.forward, mask.right);
+        targetAngle = Mathf.Clamp(targetAngle, maxTopAngle, maxButtonAngle);
+        maskCurrentAngle = Mathf.MoveTowards(maskCurrentAngle, targetAngle, Time.deltaTime * verticalRotationSpeed);
+        mask.localRotation = Quaternion.Euler(maskCurrentAngle, 0, 0);
     }
 }

@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class VehicleCamera : MonoBehaviour
 {
+    public static VehicleCamera Instance;
+
     [SerializeField] private Vehicle m_Vehicle;
     [SerializeField] private Vector3 m_Offset;
 
@@ -39,6 +41,16 @@ public class VehicleCamera : MonoBehaviour
 
     private bool isZoom;
 
+    private void Awake()
+    {
+        if(Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -46,12 +58,14 @@ public class VehicleCamera : MonoBehaviour
         defaultFov = camera.fieldOfView;
         defaultMaxVerticalAngle = m_MaxVerticalAngle;
 
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
+        if (m_Vehicle == null) return;
+
         UpdateControl();
 
         m_Distance = Mathf.Clamp(m_Distance, m_MinDistance, m_MaxDistance);

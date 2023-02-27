@@ -21,9 +21,9 @@ public class TrackTankTextureMovement : MonoBehaviour
     private void FixedUpdate()
     {
         float speed = tank.LeftWheelRmp / 60.0f * modifier * Time.fixedDeltaTime;
-        leftTrackRenderer.material.SetTextureOffset("t34_track", leftTrackRenderer.material.GetTextureOffset("t34_track") + direction * speed);
+        leftTrackRenderer.material.SetTextureOffset("_MainTex", leftTrackRenderer.material.GetTextureOffset("_MainTex") + direction * speed);
 
         speed = tank.RightWheelRmp / 60.0f * modifier * Time.fixedDeltaTime;
-        rightTrackRenderer.material.SetTextureOffset("t34_track", rightTrackRenderer.material.GetTextureOffset("t34_track") + direction * speed);
+        rightTrackRenderer.material.SetTextureOffset("_MainTex", rightTrackRenderer.material.GetTextureOffset("_MainTex") + direction * speed);
     }
 }

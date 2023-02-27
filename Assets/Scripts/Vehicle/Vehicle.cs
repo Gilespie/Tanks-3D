@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Vehicle : MonoBehaviour
+public class Vehicle : Destructible
 {
     [SerializeField] protected float m_MaxLinearVelocity;
 
