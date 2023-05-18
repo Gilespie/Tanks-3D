@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [System.Serializable]
 public class TrackWheelRow
@@ -91,6 +92,23 @@ public class TrackWheelRow
         }
     }
 
+    public void UpdateMeshRotationByRmp(float rmp)
+    {
+        float angle = rmp * 360.0f / 60.0f * Time.fixedDeltaTime;
+
+        for(int i = 0;i < meshes.Length; i++)
+        {
+            Vector3 position;
+            Quaternion rotation;
+
+            colliders[i].GetWorldPose(out position, out rotation);
+            
+            meshes[i].position = position;
+            meshes[i].Rotate(angle, 0, 0);
+
+        }
+    }
+
     //Private
     private void UpdateWheelTransform(WheelCollider wheelCollider, ref Transform wheelTransform)
     {
@@ -113,6 +131,8 @@ public class TrackTank : Vehicle
     [Header("Tracks")]
     [SerializeField] private TrackWheelRow leftWheelRow;
     [SerializeField] private TrackWheelRow rightWheelRow;
+    [SerializeField] private GameObject m_DestroyPrefab;
+    [SerializeField] private GameObject m_VisualModel;
 
     [Header("Movement")]
     [SerializeField] private ParameterCurve forwardTorqueCurve;
@@ -147,15 +167,53 @@ public class TrackTank : Vehicle
 
     private void FixedUpdate()
     {
-        float targetMotorTorque = targetInputController.z > 0 
-            ? maxForwardTorque * Mathf.RoundToInt(targetInputController.z) 
-            : maxBackwardMotorTorque * Mathf.RoundToInt(targetInputController.z);
+       if(hasAuthority == true)
+        {
+            UpdateMotorTorque();
+            CmdUpdateWheelRmp(LeftWheelRmp, RightWheelRmp);
+        }
+    }
+
+    protected override void OnDestructibleDestroy()
+    {
+        base.OnDestructibleDestroy();
+
+        GameObject ruinedPrefab = Instantiate(m_DestroyPrefab.gameObject, m_VisualModel.transform.position, m_VisualModel.transform.rotation);
+    }
+
+    [Command]
+    private void CmdUpdateWheelRmp(float leftRmp, float rightRmp)
+    {
+        SvUpdateWheelRmp(leftRmp, rightRmp);
+    }
+
+    [Server]
+    private void SvUpdateWheelRmp(float leftRmp, float rightRmp)
+    {
+        RcpUpdateWheelRmp(leftRmp, rightRmp);
+    }
+
+    [ClientRpc(includeOwner = false)]
+    private void RcpUpdateWheelRmp(float leftRmp, float rightRmp)
+    {
+        leftWheelRow.minRmp = leftRmp;
+        rightWheelRow.minRmp = rightRmp;
+
+        leftWheelRow.UpdateMeshRotationByRmp(leftRmp);
+        rightWheelRow.UpdateMeshRotationByRmp(rightRmp);
+    }
+
+    private void UpdateMotorTorque()
+    {
+        float targetMotorTorque = targetInputController.z > 0
+           ? maxForwardTorque * Mathf.RoundToInt(targetInputController.z)
+           : maxBackwardMotorTorque * Mathf.RoundToInt(targetInputController.z);
 
         float breakTorque = this.breakTorque * targetInputController.y;
         float steering = targetInputController.x;
 
         //Update target motor torque
-        if(targetMotorTorque > 0)
+        if (targetMotorTorque > 0)
         {
             currentMotorTorque = forwardTorqueCurve.MoveTowards(Time.fixedDeltaTime) * targetMotorTorque;
         }
@@ -176,7 +234,7 @@ public class TrackTank : Vehicle
         rightWheelRow.Break(breakTorque);
 
         //Rolling
-        if(targetMotorTorque == 0 && steering == 0)
+        if (targetMotorTorque == 0 && steering == 0)
         {
             leftWheelRow.Break(rollingResistance);
             rightWheelRow.Break(rollingResistance);

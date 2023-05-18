@@ -40,6 +40,7 @@ public class VehicleCamera : MonoBehaviour
     private float lastDistance;
 
     private bool isZoom;
+    public bool IsZoom => isZoom;
 
     private void Awake()
     {
@@ -57,9 +58,6 @@ public class VehicleCamera : MonoBehaviour
         camera = GetComponent<Camera>();
         defaultFov = camera.fieldOfView;
         defaultMaxVerticalAngle = m_MaxVerticalAngle;
-
-        //Cursor.visible = false;
-        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()

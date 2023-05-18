@@ -1,4 +1,5 @@
 using UnityEngine;
+using Mirror;
 
 public class Vehicle : Destructible
 {
@@ -12,8 +13,10 @@ public class Vehicle : Destructible
     [SerializeField] protected Transform zoomOpticsPosition;
     public Transform ZoomOpticPosition => zoomOpticsPosition;
 
+    public Turret Turret;
     public virtual float LinearVelocity => 0;
-
+    [SyncVar] private Vector3 m_NetAimPoint;
+    protected Vector3 targetInputController;
     public float NormalizedLinearVelocity
     {
         get
@@ -24,8 +27,23 @@ public class Vehicle : Destructible
         }
     }
 
-    protected Vector3 targetInputController;
+    public Vector3 NetAimPoint
+    {
+        get => m_NetAimPoint;
 
+        set
+        {
+            m_NetAimPoint = value; //Client
+            CmdSetNetAimPoint(value); //Server
+
+        }
+    }
+
+    [Command]
+    private void CmdSetNetAimPoint(Vector3 v)
+    {
+        m_NetAimPoint = v;
+    }
 
     public void SetTargetControl(Vector3 control)
     {
@@ -43,6 +61,29 @@ public class Vehicle : Destructible
         {
             m_EngineSFX.pitch = 1.0f + m_EnginePitchModifier * NormalizedLinearVelocity;
             m_EngineSFX.volume = 0.5f + NormalizedLinearVelocity;
+        }
+    }
+
+    public void Fire()
+    {
+        Turret.Fire();
+    }
+
+    public void SetVisible(bool visible)
+    {
+        if (visible == true)
+            SetLayerToAll("Default");
+        else
+            SetLayerToAll("IgnoreMainCamera");
+    }
+
+    private void SetLayerToAll(string layerName)
+    {
+        gameObject.layer = LayerMask.NameToLayer(layerName);
+
+        foreach(Transform t in transform.GetComponentsInChildren<Transform>()) 
+        {
+            t.gameObject.layer = LayerMask.NameToLayer(layerName);
         }
     }
 }

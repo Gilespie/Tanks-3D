@@ -12,6 +12,8 @@ namespace Mirror
     public class NetworkManagerHUD : MonoBehaviour
     {
         NetworkManager manager;
+        [SerializeField] private string m_PlayerNickname;
+        public string PlayerNickname => m_PlayerNickname;
 
         public int offsetX;
         public int offsetY;
@@ -55,6 +57,13 @@ namespace Mirror
         {
             if (!NetworkClient.active)
             {
+                GUILayout.BeginHorizontal();
+
+                GUILayout.Label("Nickname");
+                m_PlayerNickname = GUILayout.TextField(m_PlayerNickname);
+
+                GUILayout.EndHorizontal();
+
                 // Server + Client
                 if (Application.platform != RuntimePlatform.WebGLPlayer)
                 {
