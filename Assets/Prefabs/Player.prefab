@@ -66,6 +66,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_VehiclePrefab: {fileID: 8098004866650340287, guid: 128605bbc1560b048b93dfaa3c3fed4f, type: 3}
+  m_VehicleInputController: {fileID: 1298023984}
   m_TeamId: 0
 --- !u!114 &1298023984
 MonoBehaviour:

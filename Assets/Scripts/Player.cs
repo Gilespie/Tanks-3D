@@ -2,11 +2,42 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.Events;
 
+[System.Serializable]
+public class PlayerData
+{
+    public int Id;
+    public string Nickname;
+    public int TeamId;
+    public PlayerData(int id, string nickname, int teamId)
+    {
+        Id = id;
+        Nickname = nickname;
+        TeamId = teamId;
+    }
+}
+
+public static class PlayerDataReadWrite
+{
+    public static void WritePlayerData(this NetworkWriter writer, PlayerData value)
+    {
+        writer.WriteInt(value.Id);
+        writer.WriteString(value.Nickname);
+        writer.WriteInt(value.TeamId);
+    }
+
+    public static PlayerData ReadPlayerData(this NetworkReader reader)
+    {
+        return new PlayerData(reader.ReadInt(), reader.ReadString(), reader.ReadInt());
+    }
+}
+
 public class Player : NetworkBehaviour
 {
-    public UnityAction<Vehicle> VehicleSpawned;
-
     public static int m_TeamCounter;
+    public static UnityAction<int, int> ChangedFrag;
+
+    public UnityAction<Vehicle> VehicleSpawned;
+    
     public static Player Local
     {
         get
@@ -19,16 +50,38 @@ public class Player : NetworkBehaviour
         }
     }
     [SerializeField] private Vehicle m_VehiclePrefab;
+    [SerializeField] private VehicleInputController m_VehicleInputController;
 
     public Vehicle ActiveVehicle { get; set; }
 
     [Header("Player")] 
-    [SyncVar(hook = nameof(OnNicknameChanged))] string Nickname;
+    [SyncVar(hook = nameof(OnNicknameChanged))] public string Nickname;
 
     [SyncVar]
     [SerializeField] private int m_TeamId;
     public int TeamId => m_TeamId;
-    
+
+    private PlayerData data;
+    public PlayerData Data => data;
+
+    [SyncVar(hook = nameof(OnChangedFrag))]
+    private int frag;
+    public int Frag
+    {
+        get { return frag; }
+        set
+        { 
+            frag = value;
+            //Server
+            ChangedFrag?.Invoke((int)netId, frag);
+        }
+    }
+
+    //Client
+    private void OnChangedFrag(int old, int newValue)
+    {
+        ChangedFrag?.Invoke((int)netId, newValue);
+    }
     private void OnNicknameChanged(string oldName, string newName)
     {
         gameObject.name = "Player_" + newName; //On Client
@@ -55,13 +108,59 @@ public class Player : NetworkBehaviour
         m_TeamCounter++;
     }
 
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+
+        PlayerList.Instance.SvRemovePlayer(data);
+    }
+
     public override void OnStartClient()
     {
-        base.OnStartAuthority();
+        //base.OnStartAuthority();
+        base.OnStartClient();
 
         if(hasAuthority == true)
         {
             CmdSetName(NetworkSessionManager.Instance.GetComponent<NetworkManagerHUD>().PlayerNickname);
+
+            NetworkSessionManager.Match.MatchEnd += OnMatchEnd;
+
+            data = new PlayerData((int)netId, NetworkSessionManager.Instance.GetComponent<NetworkManagerHUD>().PlayerNickname, m_TeamId);
+
+            CmdAddPlayer(Data);
+            CmdUpdatePlayer(Data);
+        }
+    }
+
+    [Command]
+    private void CmdAddPlayer(PlayerData data)
+    {
+        PlayerList.Instance.SvAddPlayer(data);
+    }
+
+    [Command]
+    private void CmdUpdatePlayer(PlayerData data)
+    {
+        this.data = data;
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+
+        if(hasAuthority == true)
+        {
+            NetworkSessionManager.Match.MatchEnd -= OnMatchEnd;
+        }
+    }   
+    
+    private void OnMatchEnd()
+    {
+        if(ActiveVehicle != null)
+        {
+            ActiveVehicle.SetTargetControl(Vector3.zero);
+            m_VehicleInputController.enabled = false;
         }
     }
 
@@ -79,21 +178,7 @@ public class Player : NetworkBehaviour
         {
             if(Input.GetKeyDown(KeyCode.F9))
             {
-                foreach(var p in FindObjectsOfType<Player>())
-                {
-                    if(p.ActiveVehicle != null)
-                    {
-                        NetworkServer.UnSpawn(p.ActiveVehicle.gameObject);
-                        Destroy(p.ActiveVehicle.gameObject);
-
-                        p.ActiveVehicle = null;
-                    }
-                }
-
-                foreach(var p in FindObjectsOfType<Player>())
-                {
-                    p.SvSpawnClientVehicle();
-                }
+                NetworkSessionManager.Match.SvRestartMatch();
             }
         }
 
@@ -110,7 +195,7 @@ public class Player : NetworkBehaviour
     }
 
     [Server]
-    private void SvSpawnClientVehicle()
+    public void SvSpawnClientVehicle()
     {
         if (ActiveVehicle != null) return;
 
@@ -134,11 +219,14 @@ public class Player : NetworkBehaviour
         if (vehicle == null) return;
 
         ActiveVehicle = vehicle.GetComponent<Vehicle>();
+        ActiveVehicle.Owner = netIdentity;
 
-        if(ActiveVehicle != null && ActiveVehicle.hasAuthority && VehicleCamera.Instance != null)
+        if (ActiveVehicle != null && ActiveVehicle.hasAuthority && VehicleCamera.Instance != null)
         {
             VehicleCamera.Instance.SetTarget(ActiveVehicle);
         }
+
+        m_VehicleInputController.enabled = true;
 
         VehicleSpawned?.Invoke(ActiveVehicle);
     }

@@ -5,7 +5,8 @@ using UnityEngine.Events;
 public class Destructible : NetworkBehaviour
 {
     public UnityAction<int> HitPointChange;
-    [SerializeField] private UnityEvent OnDestroyed;
+    [SerializeField] private UnityEvent<Destructible> Destroyed;
+    public UnityEvent<Destructible> OnEventDeath => Destroyed;
 
     [SerializeField] private int m_HitPointMax;
     public int HitPointMax => m_HitPointMax;
@@ -17,6 +18,9 @@ public class Destructible : NetworkBehaviour
 
     [SyncVar(hook = nameof(ChangeHitPoint))]
     private int syncCurrentHealth;
+
+    [SyncVar(hook = "T")]
+    public NetworkIdentity Owner;
 
     public override void OnStartServer()
     {
@@ -53,7 +57,7 @@ public class Destructible : NetworkBehaviour
 
     protected virtual void OnDestructibleDestroy()
     {
-        OnDestroyed?.Invoke();
+        Destroyed?.Invoke(this);
     }
 
     private void ChangeHitPoint(int oldValue, int newValue)
@@ -61,9 +65,6 @@ public class Destructible : NetworkBehaviour
         currentHealth = newValue;
         HitPointChange?.Invoke(newValue);
     }
-
-    [SyncVar(hook = "T")]
-    public NetworkIdentity Owner;
 
     private void T(NetworkIdentity oldValue, NetworkIdentity newValue) 
     {
