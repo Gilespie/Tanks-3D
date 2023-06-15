@@ -27,7 +27,9 @@ public class VehicleInputController : MonoBehaviour
             }
         }
 
-        
+        if (Input.GetKeyDown(KeyCode.F1) == true) player.ActiveVehicle.Turret.SetSelectProjectile(0);
+        if (Input.GetKeyDown(KeyCode.F2) == true) player.ActiveVehicle.Turret.SetSelectProjectile(1);
+        if (Input.GetKeyDown(KeyCode.F3) == true) player.ActiveVehicle.Turret.SetSelectProjectile(2);
     }
 
     public static Vector3 TraceAimPointWithoutPlayerVehicle(Vector3 start, Vector3 dirrection)
@@ -40,7 +42,7 @@ public class VehicleInputController : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            if (hit.collider == m) continue;
+            if (hit.collider == m || hit.collider.isTrigger == true) continue;
             
             return hit.point;
         }

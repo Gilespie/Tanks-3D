@@ -41,10 +41,12 @@ public class TankTurret : Turret
     {
         base.OnFire();
 
-        Projectile projectile = Instantiate(Projectile);
-        projectile.transform.position = LaunchPoint.position;
-        projectile.transform.forward = LaunchPoint.forward;
-        projectile.Owner = tank.Owner;
+        Projectile proj = Instantiate(SelectedProjectile.ProjectilePrefab);
+        proj.Owner = tank.Owner;
+        proj.SetProperties(SelectedProjectile);
+
+        proj.transform.position = LaunchPoint.position;
+        proj.transform.forward = LaunchPoint.forward;
 
         FireSFX();
     }

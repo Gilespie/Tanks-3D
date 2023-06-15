@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class UIAmmoText : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI m_AmmoText;
+    /*[SerializeField] private TextMeshProUGUI m_AmmoText;
     private Turret turret;
 
     private void Start()
@@ -29,5 +29,5 @@ public class UIAmmoText : MonoBehaviour
     private void OnAmmoChanged(int ammo)
     {
         m_AmmoText.SetText(Player.Local.ActiveVehicle.Turret.AmmoCount.ToString());
-    }
+    }*/
 }

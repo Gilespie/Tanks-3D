@@ -22,7 +22,7 @@ public class ConditionTeamDeathmatch : MonoBehaviour, IMatchCondition
         {
             if (v.ActiveVehicle != null)
             {
-                v.ActiveVehicle.OnEventDeath.AddListener(OnEventDeathHandler);
+                v.ActiveVehicle.Destroyed += OnVehicleDestroyed;
 
                 if (v.TeamId == TeamSide.TeamRed)
                     red++;
@@ -37,9 +37,13 @@ public class ConditionTeamDeathmatch : MonoBehaviour, IMatchCondition
        
     }
 
-    private void OnEventDeathHandler(Destructible e)
+    private void OnVehicleDestroyed(Destructible dest)
     {
-        var ownerPlayer = e.Owner?.GetComponent<Player>();
+        Vehicle v = dest as Vehicle;
+
+        if (v == null) return;
+        
+        var ownerPlayer = v.Owner.GetComponent<Player>();
 
         if (ownerPlayer == null) return;
 

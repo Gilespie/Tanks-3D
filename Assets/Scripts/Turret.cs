@@ -1,51 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 using UnityEngine.Events;
+using Mirror;
 
 public class Turret : NetworkBehaviour
 {
-    public UnityAction<int> AmmoChanged;
+    public event UnityAction<int> UpdateSelectedAmmunition;
 
     [SerializeField] private Transform m_LaunchPoint;
     public Transform LaunchPoint => m_LaunchPoint;
 
-    [SerializeField] private Projectile m_Projectile;
-    public Projectile Projectile => m_Projectile;
-
-
-    [SyncVar, SerializeField] private int m_AmmoCount;
-    public int AmmoCount => m_AmmoCount;
-
     [SerializeField] private float m_FireRate;
 
+    [SerializeField] protected Ammunition[] m_Amminution;
+    public Ammunition[] Ammunition => m_Amminution;
+
+    [SyncVar] private int syncSelectedAmmunition;
+
     private float fireTimer;
+
+    public int SelectedAmmunitionIndex => syncSelectedAmmunition;
+    public ProjectileProperties SelectedProjectile => m_Amminution[syncSelectedAmmunition].ProjectileProp;
     public float fireRateNormalize => fireTimer / m_FireRate;
 
-    [Server]
-    public void SvAddAmmo(int count)
+    protected virtual void OnFire() { }
+    
+    public void SetSelectProjectile(int index)
     {
-        m_AmmoCount += count;
-        RpcAmmoChange();
-    }
+        if (hasAuthority == false) return;
 
-    [Server]
-    protected virtual bool SvDrawAmmo(int count)
-    {
-        if(m_AmmoCount == 0) return false;
+        if(index < 0 || index > m_Amminution.Length) return;
 
-        if(m_AmmoCount >= count)
+        syncSelectedAmmunition = index;
+
+        if(isClient ==  true)
         {
-            m_AmmoCount -= count;
-            RpcAmmoChange();
-            return true;
+            CmdReloadAmmunition();
         }
 
-        return false;
+        UpdateSelectedAmmunition?.Invoke(index);
     }
-
-    protected virtual void OnFire() { }
 
     public void Fire()
     {
@@ -58,11 +51,17 @@ public class Turret : NetworkBehaviour
     }
 
     [Command]
+    private void CmdReloadAmmunition()
+    {
+        fireTimer = m_FireRate;
+    }
+
+    [Command]
     private void CmdFire()
     {
         if (fireTimer > 0) return;
 
-        if(SvDrawAmmo(1) == false) return;
+        if (m_Amminution[syncSelectedAmmunition].SvDrawAmmo(1) == false) return;
 
         OnFire();
 
@@ -79,12 +78,6 @@ public class Turret : NetworkBehaviour
         fireTimer = m_FireRate;
 
         OnFire();
-    }
-
-    [ClientRpc]
-    private void RpcAmmoChange()
-    {
-        AmmoChanged?.Invoke(m_AmmoCount);
     }
 
     protected virtual void Update()

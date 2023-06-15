@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82ca3d9b8232d94b9cd9b8be418c572, type: 3}
+  m_Name: ProjectilePropCalibr
+  m_EditorClassIdentifier: 
+  m_Type: 2
+  m_ProjectilePrefab: {fileID: 4386294873748297498, guid: 4c90051852dbe0048a941e3b091d4fac, type: 3}
+  m_ProjectileIcon: {fileID: 21300000, guid: e2775a37c34308847b625accaf3a006c, type: 3}
+  m_Speed: 500
+  m_Mass: 0.001
+  m_ImpactForce: 1000
+  m_Damage: 100
+  m_DamageSpread: 0.051
+  m_Calibr: 75
+  m_ArmorPenetration: 50
+  m_ArmorPenetrationSpred: 0.25
+  m_NormalizationAngle: 5
+  m_RicochetAngle: 70

@@ -163,6 +163,13 @@ public class TrackTank : Vehicle
     {
         rigidBody = GetComponent<Rigidbody>();
         rigidBody.centerOfMass = centerOfMass.localPosition;
+
+        Destroyed += OnTrackTankDestroyed;
+    }
+
+    private void OnDestroy()
+    {
+        Destroyed -= OnTrackTankDestroyed;
     }
 
     private void FixedUpdate()
@@ -174,10 +181,8 @@ public class TrackTank : Vehicle
         }
     }
 
-    protected override void OnDestructibleDestroy()
+    private void OnTrackTankDestroyed(Destructible arg0)
     {
-        base.OnDestructibleDestroy();
-
         GameObject ruinedPrefab = Instantiate(m_DestroyPrefab.gameObject, m_VisualModel.transform.position, m_VisualModel.transform.rotation);
     }
 

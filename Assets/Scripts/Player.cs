@@ -36,7 +36,8 @@ public class Player : NetworkBehaviour
     public static int m_TeamCounter;
     public static UnityAction<int, int> ChangedFrag;
 
-    public UnityAction<Vehicle> VehicleSpawned;
+    public event UnityAction<Vehicle> VehicleSpawned;
+    public event UnityAction<ProjectileHitResult> ProjectileHit;
     
     public static Player Local
     {
@@ -75,6 +76,25 @@ public class Player : NetworkBehaviour
             //Server
             ChangedFrag?.Invoke((int)netId, frag);
         }
+    }
+
+    [Server]
+    public void SvInvokeProjectileHit(ProjectileHitResult hitResult)
+    {
+        ProjectileHit?.Invoke(hitResult);
+
+        RpcInvokeProjectileHit(hitResult.Type, hitResult.Damage, hitResult.Point);
+    }
+
+    [ClientRpc]
+    private void RpcInvokeProjectileHit(ProjectileHitType type, float damage, Vector3 hitPoint)
+    {
+        ProjectileHitResult hitResult = new ProjectileHitResult();
+        hitResult.Type = type;
+        hitResult.Damage = damage;
+        hitResult.Point = hitPoint;
+
+        ProjectileHit?.Invoke(hitResult);
     }
 
     //Client
