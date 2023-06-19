@@ -159,9 +159,14 @@ public class TrackTank : Vehicle
     public float LeftWheelRmp => leftWheelRow.minRmp;
     public float RightWheelRmp => rightWheelRow.minRmp;
 
-    private void Start()
+
+    private void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
         rigidBody.centerOfMass = centerOfMass.localPosition;
 
         Destroyed += OnTrackTankDestroyed;
@@ -178,12 +183,19 @@ public class TrackTank : Vehicle
         {
             UpdateMotorTorque();
             CmdUpdateWheelRmp(LeftWheelRmp, RightWheelRmp);
+            CmdUpdateLinearVelocity(LinearVelocity);
         }
     }
 
     private void OnTrackTankDestroyed(Destructible arg0)
     {
         GameObject ruinedPrefab = Instantiate(m_DestroyPrefab.gameObject, m_VisualModel.transform.position, m_VisualModel.transform.rotation);
+    }
+
+    [Command]
+    private void CmdUpdateLinearVelocity(float velocity)
+    {
+        syncLinearVelocity = velocity;
     }
 
     [Command]

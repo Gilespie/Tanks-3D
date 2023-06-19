@@ -14,16 +14,21 @@ public class Vehicle : Destructible
     public Transform ZoomOpticPosition => zoomOpticsPosition;
 
     public Turret Turret;
+    public VehicleViewer Viewer;
     public virtual float LinearVelocity => 0;
     [SyncVar] private Vector3 m_NetAimPoint;
     protected Vector3 targetInputController;
+
+    public int TeamId;
+
+    protected float syncLinearVelocity;
     public float NormalizedLinearVelocity
     {
         get
         {
-            if (Mathf.Approximately(0, LinearVelocity) == true) return 0;
+            if (Mathf.Approximately(0, syncLinearVelocity) == true) return 0;
 
-            return Mathf.Clamp01(LinearVelocity / m_MaxLinearVelocity);
+            return Mathf.Clamp01(syncLinearVelocity / m_MaxLinearVelocity);
         }
     }
 
@@ -72,9 +77,17 @@ public class Vehicle : Destructible
     public void SetVisible(bool visible)
     {
         if (visible == true)
+        {
+            if (gameObject.layer == LayerMask.NameToLayer("Default")) return;
+
             SetLayerToAll("Default");
+        }
         else
+        {
+            if(gameObject.layer == LayerMask.NameToLayer("IgnoreMainCamera")) return;
+
             SetLayerToAll("IgnoreMainCamera");
+        }
     }
 
     private void SetLayerToAll(string layerName)

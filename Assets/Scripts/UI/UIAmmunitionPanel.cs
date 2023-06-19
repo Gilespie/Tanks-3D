@@ -17,30 +17,31 @@ public class UIAmmunitionPanel : MonoBehaviour
 
     private void Start()
     {
-        NetworkSessionManager.Events.PlayerVehicleSpawned += OnPlayerVehicleSpawned;
+        NetworkSessionManager.Match.MatchStart += OnMatchStarted;
+        NetworkSessionManager.Match.MatchEnd += OnMatchEnded;
     }
 
     private void OnDestroy()
     {
-        NetworkSessionManager.Events.PlayerVehicleSpawned -= OnPlayerVehicleSpawned;
+        NetworkSessionManager.Match.MatchStart -= OnMatchStarted;
+        NetworkSessionManager.Match.MatchEnd -= OnMatchEnded;
 
-        if(allAmmunition != null)
-        {
-            turret.UpdateSelectedAmmunition += OnTurretUpdateSelectedAmmunition;
-        }
-
-        for(int i = 0; i < allAmmunition.Count; i++)
-        {
-            allAmmunition[i].AmmoCountChanged -= OnAmmoCountChanged;
-        }
     }
 
-    private void OnPlayerVehicleSpawned(Vehicle vehicle)
+    private void OnMatchStarted()
     {
-        turret = vehicle.Turret;
+        turret = Player.Local.ActiveVehicle.Turret;
         turret.UpdateSelectedAmmunition += OnTurretUpdateSelectedAmmunition;
 
-        for(int i =0; i < turret.Ammunition.Length; i++)
+        for (int i = 0; i < m_AmmunitionParent.childCount; i++)
+        {
+            Destroy(m_AmmunitionParent.GetChild(i).gameObject);
+        }
+
+        allAmmunitionElements.Clear();
+        allAmmunition.Clear();
+
+        for (int i = 0; i < turret.Ammunition.Length; i++)
         {
             UIAmmunitionElement ammunitionElement = Instantiate(m_AmmunitionElementPrefab);
             ammunitionElement.transform.SetParent(m_AmmunitionParent);
@@ -52,10 +53,23 @@ public class UIAmmunitionPanel : MonoBehaviour
             allAmmunitionElements.Add(ammunitionElement);
             allAmmunition.Add(turret.Ammunition[i]);
 
-            if(i == 0)
+            if (i == 0)
             {
                 ammunitionElement.Select();
             }
+        }
+    }
+
+    private void OnMatchEnded()
+    {
+        if (allAmmunition != null)
+        {
+            turret.UpdateSelectedAmmunition += OnTurretUpdateSelectedAmmunition;
+        }
+
+        for (int i = 0; i < allAmmunition.Count; i++)
+        {
+            allAmmunition[i].AmmoCountChanged -= OnAmmoCountChanged;
         }
     }
 

@@ -5,6 +5,7 @@ using Mirror;
 public class Turret : NetworkBehaviour
 {
     public event UnityAction<int> UpdateSelectedAmmunition;
+    public event UnityAction Shooted;
 
     [SerializeField] private Transform m_LaunchPoint;
     public Transform LaunchPoint => m_LaunchPoint;
@@ -68,6 +69,8 @@ public class Turret : NetworkBehaviour
         fireTimer = m_FireRate;
 
         RpcFire();
+
+        Shooted?.Invoke();
     }
 
     [ClientRpc]
@@ -78,6 +81,8 @@ public class Turret : NetworkBehaviour
         fireTimer = m_FireRate;
 
         OnFire();
+
+        Shooted?.Invoke();
     }
 
     protected virtual void Update()

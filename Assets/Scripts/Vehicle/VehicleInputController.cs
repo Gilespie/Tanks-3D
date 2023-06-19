@@ -38,14 +38,17 @@ public class VehicleInputController : MonoBehaviour
 
         RaycastHit[] hits = Physics.RaycastAll(ray, m_AimDistance);
 
-        var m = Player.Local.ActiveVehicle.GetComponent<Rigidbody>();
+        var t = Player.Local.ActiveVehicle.GetComponent<Rigidbody>();
 
-        foreach (var hit in hits)
+        for(int i = hits.Length - 1; i >= 0; i--)
         {
-            if (hit.collider == m || hit.collider.isTrigger == true) continue;
-            
-            return hit.point;
+            if (hits[i].collider.isTrigger == true) continue;
+
+            if (hits[i].collider.transform.root.GetComponent<Vehicle>() == t) continue;
+
+            return hits[i].point;
         }
+
         return ray.GetPoint(m_AimDistance);
     }
 }

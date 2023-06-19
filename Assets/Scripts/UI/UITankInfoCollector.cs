@@ -8,7 +8,7 @@ public class UITankInfoCollector : MonoBehaviour
     [SerializeField] private UITankInfo m_TankInfoPrefab;
 
     private UITankInfo[] tanksInfo;
-    private List<Player> playerWithoutLocal;
+    private List<Vehicle> vehiclesWithoutLocal;
 
     private void Start()
     {
@@ -24,23 +24,23 @@ public class UITankInfoCollector : MonoBehaviour
 
     private void OnMatchStart()
     {
-        Player[] players = FindObjectsOfType<Player>();
+        Vehicle[] vehicles = FindObjectsOfType<Vehicle>();
 
-        playerWithoutLocal = new List<Player>(players.Length - 1);
+        vehiclesWithoutLocal = new List<Vehicle>(vehicles.Length - 1);
 
-        for(int i =0; i < players.Length; i++) 
+        for(int i = 0; i < vehicles.Length; i++) 
         {
-            if (players[i] == Player.Local) continue;
+            if (vehicles[i] == Player.Local.ActiveVehicle) continue;
 
-            playerWithoutLocal.Add(players[i]);
+            vehiclesWithoutLocal.Add(vehicles[i]);
         }
 
-        tanksInfo = new UITankInfo[playerWithoutLocal.Count];
+        tanksInfo = new UITankInfo[vehiclesWithoutLocal.Count];
 
-        for(int i = 0; i < playerWithoutLocal.Count; i++)
+        for(int i = 0; i < vehiclesWithoutLocal.Count; i++)
         {
             tanksInfo[i] = Instantiate(m_TankInfoPrefab);
-            tanksInfo[i].SetTank(playerWithoutLocal[i].ActiveVehicle);
+            tanksInfo[i].SetTank(vehiclesWithoutLocal[i]);
             tanksInfo[i].transform.SetParent(m_TankInfoPanel);
 
         }
@@ -63,6 +63,12 @@ public class UITankInfoCollector : MonoBehaviour
         for(int i = 0; i < tanksInfo.Length; i++)
         {
             if (tanksInfo[i] == null) continue;
+
+            bool isVisible = Player.Local.ActiveVehicle.Viewer.IsVisible(tanksInfo[i].Tank.netIdentity);
+
+            tanksInfo[i].gameObject.SetActive(isVisible);
+
+            if (tanksInfo[i].gameObject.activeSelf == false) continue;
 
             Vector3 screenPos = Camera.main.WorldToScreenPoint(tanksInfo[i].Tank.transform.position + tanksInfo[i].WorldOffset);
 

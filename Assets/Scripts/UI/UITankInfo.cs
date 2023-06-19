@@ -15,6 +15,6 @@ public class UITankInfo : MonoBehaviour
     {
         this.tank = tank;
 
-        m_HealthSlider.Init(tank, tank.Owner.GetComponent<Player>().TeamId, Player.Local.TeamId);
+        m_HealthSlider.Init(tank, tank.TeamId, Player.Local.TeamId);
     }
 }
