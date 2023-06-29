@@ -27,7 +27,7 @@ public class Turret : NetworkBehaviour
     
     public void SetSelectProjectile(int index)
     {
-        if (hasAuthority == false) return;
+        if (isOwned == false) return;
 
         if(index < 0 || index > m_Amminution.Length) return;
 
@@ -43,7 +43,7 @@ public class Turret : NetworkBehaviour
 
     public void Fire()
     {
-        if(hasAuthority == false) return;
+        if(isOwned == false) return;
 
         if (isClient == true)
         {
@@ -51,14 +51,8 @@ public class Turret : NetworkBehaviour
         }
     }
 
-    [Command]
-    private void CmdReloadAmmunition()
-    {
-        fireTimer = m_FireRate;
-    }
-
-    [Command]
-    private void CmdFire()
+    [Server]
+    public void SvFire()
     {
         if (fireTimer > 0) return;
 
@@ -71,6 +65,18 @@ public class Turret : NetworkBehaviour
         RpcFire();
 
         Shooted?.Invoke();
+    }
+
+    [Command]
+    private void CmdReloadAmmunition()
+    {
+        fireTimer = m_FireRate;
+    }
+
+    [Command]
+    private void CmdFire()
+    {
+       SvFire();
     }
 
     [ClientRpc]

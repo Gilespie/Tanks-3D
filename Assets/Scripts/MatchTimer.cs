@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
@@ -26,6 +24,8 @@ public class MatchTimer : NetworkBehaviour, IMatchCondition
 
     private void Start()
     {
+        timeLeft = m_MatchTimer;
+
         if(isServer == true)
         {
             enabled = false;

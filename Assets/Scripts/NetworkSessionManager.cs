@@ -13,8 +13,13 @@ public class NetworkSessionManager : NetworkManager
     public static NetworkSessionManager Instance => singleton as NetworkSessionManager;
     public static GameEventCollector Events => Instance.m_GameEventCollector;
     public static MatchController Match => Instance.m_MatchController;
-    public bool IsServer => (mode == NetworkManagerMode.Host || mode == NetworkManagerMode.ServerOnly);
-    public bool IsClient => (mode == NetworkManagerMode.Host || mode == NetworkManagerMode.ClientOnly);
+    public bool IsServer => mode == NetworkManagerMode.Host || mode == NetworkManagerMode.ServerOnly;
+    public bool IsClient => mode == NetworkManagerMode.Host || mode == NetworkManagerMode.ClientOnly;
+
+    public Vector3 GetSpawnPointByTeam(int teamId)
+    {
+        return teamId % 2 == 0 ? RandomSpawnPointRed : RandomSpawnPointYellow;
+    }
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {

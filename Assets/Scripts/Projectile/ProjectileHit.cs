@@ -1,8 +1,4 @@
-using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public enum ProjectileHitType
 {
@@ -98,7 +94,7 @@ public class ProjectileHit : MonoBehaviour
             hitResult.Type = ProjectileHitType.Non_Penetration;
         }
 
-        Debug.LogErrorFormat($"Armor: {hitArmor.Thickness}, reduceArmor: {reduceArmor}, angle: {angle}, norm: {normalization}, penetration: {projectilePenetration}, Type: {hitResult.Type}.");
+        //Debug.LogErrorFormat($"Armor: {hitArmor.Thickness}, reduceArmor: {reduceArmor}, angle: {angle}, norm: {normalization}, penetration: {projectilePenetration}, Type: {hitResult.Type}.");
 
         if(hitResult.Type == ProjectileHitType.Penetration)
             hitResult.Damage = projectile.Properties.GetDamageSpread();

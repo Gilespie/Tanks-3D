@@ -20,7 +20,6 @@ public class VehicleViewer : NetworkBehaviour
     private Vehicle vehicle;
     private float remainingTimeLastUpdate;
 
-
     public override void OnStartServer()
     {
         base.OnStartServer();
@@ -79,7 +78,7 @@ public class VehicleViewer : NetworkBehaviour
 
                 for (int j = 0; j < m_ViewPoints.Length; j++)
                 {
-                    IsVisible = CheckVisibility(m_ViewPoints[j].position, allVehicleDimensions[i]);
+                    IsVisible = CheckVisibility(m_ViewPoints[j].position, allVehicleDimensions[i]); //TODO: cambiar esta mierda)
 
                     if (IsVisible == true) break;
                 }
@@ -99,7 +98,6 @@ public class VehicleViewer : NetworkBehaviour
                 {
                     if (remainingTime[VisibleVehicles.IndexOf(allVehicleDimensions[i].Vehicle.netIdentity)] == -1)
                         remainingTime[VisibleVehicles.IndexOf(allVehicleDimensions[i].Vehicle.netIdentity)] = BASE_EXIT_TIME_FROM_DISCOVERY;
-                    //VisibleVehicles.Remove(allVehicleDimensions[i].Vehicle.netIdentity);
                 }
             }
 
@@ -131,6 +129,30 @@ public class VehicleViewer : NetworkBehaviour
         return VisibleVehicles.Contains(identity);
     }
 
+    public List<Vehicle> GetAllVehicle()
+    {
+        List<Vehicle> av = new List<Vehicle>(allVehicleDimensions.Count);
+
+        for (int i = 0; i < allVehicleDimensions.Count; i++)
+        {
+            av.Add(allVehicleDimensions[i].Vehicle);
+        }
+
+        return av;
+    }
+
+    public List<Vehicle> GetAllVisibleVehicle()
+    {
+        List<Vehicle> av = new List<Vehicle>(allVehicleDimensions.Count);
+
+        for(int i = 0; i < allVehicleDimensions.Count; i++)
+        {
+            av.Add(VisibleVehicles[i].GetComponent<Vehicle>());
+        }
+
+        return av;
+    }
+
     private bool CheckVisibility(Vector3 viewPoint, VehicleDimensions vehicleDimensions)
     {
         float distance = Vector3.Distance(transform.position, vehicleDimensions.transform.position);
@@ -152,16 +174,5 @@ public class VehicleViewer : NetworkBehaviour
         if(distance > curViewDist) return false;
 
         return vehicleDimensions.IsVisibleFromPoint(transform.root, viewPoint, m_Color);
-    }
-
-    public List<Vehicle> GetAllVehicle()
-    {
-        List<Vehicle> av = new List<Vehicle>(allVehicleDimensions.Count);
-
-        for(int i = 0; i < allVehicleDimensions.Count; i++)
-        {
-            av.Add(allVehicleDimensions[i].Vehicle);
-        }
-        return av;
     }
 }

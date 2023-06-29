@@ -39,7 +39,9 @@ public class Vehicle : Destructible
         set
         {
             m_NetAimPoint = value; //Client
-            CmdSetNetAimPoint(value); //Server
+
+            if(isOwned == true)
+                CmdSetNetAimPoint(value); //Server
 
         }
     }

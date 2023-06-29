@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using Mirror;
+using System.Collections;
 
 public interface IMatchCondition
 {
@@ -12,11 +13,26 @@ public interface IMatchCondition
 
 public class MatchController : NetworkBehaviour
 {
+    public static int TeamIDCounter;
+
+    public static int GetTeamID()
+    {
+        return TeamIDCounter++ % 2;
+    }
+
+    public static void ResetTeamCounter()
+    {
+        TeamIDCounter = 1;
+    }
+
     public UnityAction MatchStart;
     public UnityAction MatchEnd;
 
     public UnityAction SvMatchStart;
     public UnityAction SvMatchEnd;
+
+    [SerializeField] private MatchMemberSpawner m_Spawner;
+    [SerializeField] private float m_DelayAfterSpawnBeforeStartMatch = 0.5f;
 
     [SyncVar] private bool matchActive;
     public bool MatchActive => matchActive;
@@ -41,7 +57,6 @@ public class MatchController : NetworkBehaviour
                     if(c.IsTriggered == true)
                     {
                         SvEndMatch();
-                        Debug.Log("SvEndMatch()");
                         break;
                     }
                 }
@@ -56,22 +71,16 @@ public class MatchController : NetworkBehaviour
 
         matchActive = true;
 
-        foreach (var p in FindObjectsOfType<Player>())
-        {
-            if (p.ActiveVehicle != null)
-            {
-                NetworkServer.UnSpawn(p.ActiveVehicle.gameObject);
-                Destroy(p.ActiveVehicle.gameObject);
-                p.ActiveVehicle = null;
-            }
-        }
+        m_Spawner.SvRespawnVehiclesAllMembers();
 
-        foreach (var p in FindObjectsOfType<Player>())
-        {
-            p.SvSpawnClientVehicle();
-        }
+        StartCoroutine(StartEventMatchWithDelay(m_DelayAfterSpawnBeforeStartMatch));
+    }
 
-        foreach(var c in matchConditions)
+    private IEnumerator StartEventMatchWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        foreach (var c in matchConditions)
         {
             c.OnServerMatchStart(this);
         }

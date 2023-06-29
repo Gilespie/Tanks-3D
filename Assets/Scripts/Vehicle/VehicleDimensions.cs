@@ -3,6 +3,7 @@ using UnityEngine;
 public class VehicleDimensions : MonoBehaviour
 {
     [SerializeField] private Transform[] m_Points;
+    [SerializeField] private Transform[] m_PriorityFirePoints;
 
     private Vehicle vehicle;
     public Vehicle Vehicle => vehicle;
@@ -38,6 +39,11 @@ public class VehicleDimensions : MonoBehaviour
 
         }
         return false;
+    }
+
+    public Transform GetPriorityFirePoint()
+    {
+        return m_PriorityFirePoints[0]; //TODO: —делать случайное выпадение приоритетных точек.
     }
 
 #if UNITY_EDITOR

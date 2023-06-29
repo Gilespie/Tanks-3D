@@ -14,28 +14,28 @@ public class UIPlayerList : MonoBehaviour
 
     private void Start()
     {
-        PlayerList.UpdatePlayerList += OnUpdatePlayerList;
+        MatchMemberList.UpdateList += OnUpdatePlayerList;
         Player.ChangedFrag += OnChangeFrag;
     }
 
     private void OnDestroy()
     {
-        PlayerList.UpdatePlayerList -= OnUpdatePlayerList;
+        MatchMemberList.UpdateList -= OnUpdatePlayerList;
         Player.ChangedFrag -= OnChangeFrag;
     }
 
-    private void OnChangeFrag(int playerNetId, int frag)
+    private void OnChangeFrag(MatchMember member, int frag)
     {
         for (int i = 0; i < allPlayerLable.Count; i++)
         {
-            if (allPlayerLable[i].NetId == playerNetId)
+            if (allPlayerLable[i].NetId == member.netId)
             {
                 allPlayerLable[i].UpdateFrags(frag);
             }
         }
     }
 
-    private void OnUpdatePlayerList(List<PlayerData> playerData)
+    private void OnUpdatePlayerList(List<MatchMemberData> playerData)
     {
         for(int i = 0; i < m_LocalTeamPanel.childCount; i++)
         {
@@ -59,7 +59,7 @@ public class UIPlayerList : MonoBehaviour
         }
     }
 
-    private void AddPlayerLabel(PlayerData data, UIPlayerLabel label, Transform parent)
+    private void AddPlayerLabel(MatchMemberData data, UIPlayerLabel label, Transform parent)
     {
         UIPlayerLabel uiPlayerLbel = Instantiate(m_PlayerLabelPrefab);
         uiPlayerLbel.transform.SetParent(parent);

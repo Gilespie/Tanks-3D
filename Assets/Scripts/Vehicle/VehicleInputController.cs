@@ -16,7 +16,7 @@ public class VehicleInputController : MonoBehaviour
         if (player == null) return;
         if (player.ActiveVehicle == null) return;
 
-        if (player.hasAuthority && player.isLocalPlayer)
+        if (player.isOwned && player.isLocalPlayer)
         {
             player.ActiveVehicle.SetTargetControl(new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Jump"), Input.GetAxis("Vertical")));
             player.ActiveVehicle.NetAimPoint = TraceAimPointWithoutPlayerVehicle(VehicleCamera.Instance.transform.position, VehicleCamera.Instance.transform.forward);

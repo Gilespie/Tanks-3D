@@ -179,7 +179,14 @@ public class TrackTank : Vehicle
 
     private void FixedUpdate()
     {
-       if(hasAuthority == true)
+        if(isServer == true)
+        {
+            UpdateMotorTorque();
+            SvUpdateWheelRmp(LeftWheelRmp, RightWheelRmp);
+            SvUpdateLinearVelocity(LinearVelocity);
+        }
+
+        if(isOwned == true)
         {
             UpdateMotorTorque();
             CmdUpdateWheelRmp(LeftWheelRmp, RightWheelRmp);
@@ -194,6 +201,12 @@ public class TrackTank : Vehicle
 
     [Command]
     private void CmdUpdateLinearVelocity(float velocity)
+    {
+        SvUpdateLinearVelocity(velocity);
+    }
+
+    [Server]
+    public void SvUpdateLinearVelocity(float velocity)
     {
         syncLinearVelocity = velocity;
     }
@@ -300,24 +313,22 @@ public class TrackTank : Vehicle
                     rightWheelRow.SetTorque(currentMotorTorque);
                 }
             }
-
-            //delete this module if dont work move
             if (steering != 0 && (Mathf.Abs(leftWheelRow.minRmp) < 1 || Mathf.Abs(rightWheelRow.minRmp) < 1))
             {
-                leftWheelRow.SetTorque(rotateTorqueInMotion);
-                rightWheelRow.SetTorque(rotateTorqueInMotion);
+                rightWheelRow.SetTorque(rotateTorqueInMotion * Mathf.Sign(currentMotorTorque));
+                leftWheelRow.SetTorque(rotateTorqueInMotion * Mathf.Sign(currentMotorTorque));
             }
             else
             {
                 if (steering < 0)
                 {
                     leftWheelRow.Break(rotateBreakInMotion);
-                    rightWheelRow.SetTorque(rotateTorqueInMotion);
+                    rightWheelRow.SetTorque(rotateTorqueInMotion * Mathf.Sign(currentMotorTorque));
                 }
 
                 if (steering > 0)
                 {
-                    leftWheelRow.SetTorque(rotateTorqueInMotion);
+                    leftWheelRow.SetTorque(rotateTorqueInMotion * Mathf.Sign(currentMotorTorque));
                     rightWheelRow.Break(rotateBreakInMotion);
                 }
             }
