@@ -23,12 +23,7 @@ public class VehicleCamouflage : MonoBehaviour
         targetPercent = 1f;
     }
 
-    private void OnDestroy()
-    {
-        if(NetworkSessionManager.Instance.IsServer == false) return;
 
-        vehicle.Turret.Shooted -= OnShooted;
-    }
 
     private void Update()
     {
@@ -44,6 +39,13 @@ public class VehicleCamouflage : MonoBehaviour
         m_Percent = Mathf.Clamp01(m_Percent);
 
         currentDistance = m_BaseDistance * m_Percent;
+    }
+
+    private void OnDestroy()
+    {
+        if (NetworkSessionManager.Instance.IsServer == false) return;
+
+        vehicle.Turret.Shooted -= OnShooted;
     }
 
     private void OnShooted()

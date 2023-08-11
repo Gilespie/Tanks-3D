@@ -18,7 +18,7 @@ public class UIDayTime : MonoBehaviour
 
     private void OnDayTimeChanged(float time)
     {
-        float hours = Mathf.FloorToInt(time / 60);
+        float hours = Mathf.FloorToInt(time / 60f);
         float minutes = Mathf.FloorToInt(time % 60f);
         timeDayText.SetText(string.Format("{0:00}:{1:00}", hours, minutes));
     }

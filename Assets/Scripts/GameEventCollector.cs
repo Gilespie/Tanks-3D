@@ -7,13 +7,13 @@ public class GameEventCollector : NetworkBehaviour
     public UnityAction<Vehicle> PlayerVehicleSpawned;
 
     [Server]
-    public void SvAddPlayer()
+    public void SvOnAddPlayer()
     {
-        RpcAddPlayer();
+        RpcOnAddPlayer();
     }
 
     [ClientRpc]
-    public void RpcAddPlayer()
+    public void RpcOnAddPlayer()
     {
         Player.Local.VehicleSpawned += OnPlayerVehicleSpawned;
     }

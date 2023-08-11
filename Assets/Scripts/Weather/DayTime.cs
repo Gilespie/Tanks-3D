@@ -9,7 +9,7 @@ public class DayTime : MonoBehaviour
 
     [SerializeField] private Transform m_Sun;
     [SerializeField] private TextMeshProUGUI m_DayTimeText;
-    [SerializeField] private float m_GameTimeDuration;
+    //[SerializeField] private float m_GameTimeDuration;
     [SerializeField] private Gradient m_DayGradient;
     [SerializeField] private Gradient m_AmbientColor;
 
@@ -27,14 +27,7 @@ public class DayTime : MonoBehaviour
 
     private void Update()
     {
-        //float timer = 1f;
-
-        //timer -= Time.deltaTime;
-
-      
-            TestTime();
-            
-        
+        TestTime();
 
         m_TimeProgress += Time.deltaTime / m_TimeInSeconds;
 
@@ -56,10 +49,10 @@ public class DayTime : MonoBehaviour
         DayTimeChanged?.Invoke(m_currentTime);
     }
 
-    private void SunRotation()
+    /*private void SunRotation()
     {
         float angle = m_currentTime/m_GameTimeDuration * 360f;
 
         m_Sun.transform.rotation = Quaternion.Euler(angle, 0, 0);
-    }
+    }*/
 }

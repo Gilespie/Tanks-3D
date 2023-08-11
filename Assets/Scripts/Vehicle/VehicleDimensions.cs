@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Vehicle))]
 public class VehicleDimensions : MonoBehaviour
 {
     [SerializeField] private Transform[] m_Points;
@@ -19,7 +20,7 @@ public class VehicleDimensions : MonoBehaviour
     {
         bool visible = true;
 
-        for(int i = 0; i <= m_Points.Length; i++)
+        for(int i = 0; i < m_Points.Length; i++)
         {
             //Debug.DrawLine(point, m_Points[i].position, color);
 
@@ -27,9 +28,9 @@ public class VehicleDimensions : MonoBehaviour
 
             visible = true;
 
-            for(int j = 0; j <= l; j++)
+            for(int j = 0; j < l; j++)
             {
-                if (hits[j].collider.transform.root == source) continue;
+                if (hits[j].collider.transform.root == source) continue; //TODO: Fix it
                 if (hits[i].collider.transform.root == transform.root) continue;
 
                 visible = false;

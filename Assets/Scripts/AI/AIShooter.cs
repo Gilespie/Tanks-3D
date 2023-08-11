@@ -25,7 +25,7 @@ public class AIShooter : MonoBehaviour
 
     public void FindTarget()
     {
-        List<Vehicle> v = m_Viewer.GetAllVisibleVehicle();
+        List<Vehicle> v = m_Viewer.GetAllVehicle();
 
         float minDist = float.MaxValue;
         int index = -1;

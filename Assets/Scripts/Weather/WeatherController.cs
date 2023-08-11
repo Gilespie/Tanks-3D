@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class WeatherController : MonoBehaviour
 {
     public static event Action<WeatherType> WeatherChanged;
+    public static float ThunderChance;
 
     [SerializeField] private float m_TimeToChangeWeather;
     [SerializeField] private bool m_IsTimerActive;
@@ -17,6 +17,7 @@ public class WeatherController : MonoBehaviour
     private void Start()
     {
         timerChange = 0f;
+        InvokeRepeating("ChangeThunderChance", 0f, 10f);
     }
 
     private void Update()
@@ -35,8 +36,22 @@ public class WeatherController : MonoBehaviour
 
     private void ChangeWeather()
     {
-        randomIndex = (WeatherType)Random.Range(0, Enum.GetValues(typeof(WeatherType)).Length);
+        randomIndex = (WeatherType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(WeatherType)).Length);
         WeatherChanged?.Invoke(randomIndex);
-        Debug.Log(randomIndex);
     }
+
+    private float ChangeThunderChance()
+    {
+        return ThunderChance = UnityEngine.Random.Range(0f, 1f);
+    }
+
+/*
+    private IEnumerator StartChangeChance()
+    {
+        while(true)
+        {
+            yield return ThunderChance;
+            yield return new WaitForSeconds(1f);
+        }
+    }*/
 }

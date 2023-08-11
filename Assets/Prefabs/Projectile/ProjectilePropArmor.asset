@@ -20,3 +20,8 @@ MonoBehaviour:
   m_ImpactForce: 3000
   m_Damage: 150
   m_DamageSpread: 0.25
+  m_Calibr: 50
+  m_ArmorPenetration: 80
+  m_ArmorPenetrationSpred: 0.25
+  m_NormalizationAngle: 5
+  m_RicochetAngle: 60

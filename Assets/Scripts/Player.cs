@@ -148,7 +148,7 @@ public class Player : MatchMember
 
         playerVehicle.transform.position = TeamId % 2 == 0 ?
             NetworkSessionManager.Instance.RandomSpawnPointRed : 
-            NetworkSessionManager.Instance.RandomSpawnPointYellow;
+            NetworkSessionManager.Instance.RandomSpawnPointGreen;
 
         NetworkServer.Spawn(playerVehicle, netIdentity.connectionToClient);
 

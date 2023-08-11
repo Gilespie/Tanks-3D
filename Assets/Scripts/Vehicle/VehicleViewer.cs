@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -103,7 +102,7 @@ public class VehicleViewer : NetworkBehaviour
 
             for (int i = 0; i < remainingTime.Count; i++)
             {
-                if (remainingTime[i] >= 0)
+                if (remainingTime[i] > 0)
                 {
                     remainingTime[i] -= Time.deltaTime;
 
@@ -141,18 +140,6 @@ public class VehicleViewer : NetworkBehaviour
         return av;
     }
 
-    public List<Vehicle> GetAllVisibleVehicle()
-    {
-        List<Vehicle> av = new List<Vehicle>(allVehicleDimensions.Count);
-
-        for(int i = 0; i < allVehicleDimensions.Count; i++)
-        {
-            av.Add(VisibleVehicles[i].GetComponent<Vehicle>());
-        }
-
-        return av;
-    }
-
     private bool CheckVisibility(Vector3 viewPoint, VehicleDimensions vehicleDimensions)
     {
         float distance = Vector3.Distance(transform.position, vehicleDimensions.transform.position);
@@ -173,6 +160,6 @@ public class VehicleViewer : NetworkBehaviour
 
         if(distance > curViewDist) return false;
 
-        return vehicleDimensions.IsVisibleFromPoint(transform.root, viewPoint, m_Color);
+        return vehicleDimensions.IsVisibleFromPoint(transform.root, viewPoint, m_Color); //TODO: Fix it
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SphereArea : MonoBehaviour
@@ -11,7 +9,7 @@ public class SphereArea : MonoBehaviour
     {
         get
         {
-            var pos = UnityEngine.Random.insideUnitSphere * m_Raduis + transform.position;
+            var pos = Random.insideUnitSphere * m_Raduis + transform.position;
 
             pos.y = transform.position.y;
 

@@ -26,5 +26,7 @@ public class WeatherProperties : ScriptableObject
         return m_Direction = new Vector3(0, randomDirection, 0);
     }
 
+
+
     
 }

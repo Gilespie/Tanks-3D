@@ -39,7 +39,7 @@ public class AITank : NetworkBehaviour
 
     private void OnVehicleDestroyed(Destructible arg0)
     {
-        throw new System.NotImplementedException();
+        gameObject.SetActive(false);
     }
 
     private void Update()
@@ -52,8 +52,10 @@ public class AITank : NetworkBehaviour
 
     private void OnDestroy()
     {
+        NetworkSessionManager.Match.MatchStart += OnMatchStart;
         m_Movement.enabled = false;
         m_Shooter.enabled = false;
+        
     }
 
 

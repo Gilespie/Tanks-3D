@@ -52,7 +52,7 @@ MonoBehaviour:
   m_ProjectileHit: {fileID: 4987219214480331796}
   m_VisualModel: {fileID: 4967993198410625042}
   m_DelayBeforDestroy: 1
-  m_LifeTime: 10
+  m_LifeTime: 5
 --- !u!114 &3449419243755232649
 MonoBehaviour:
   m_ObjectHideFlags: 0

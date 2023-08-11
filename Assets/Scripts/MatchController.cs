@@ -25,11 +25,11 @@ public class MatchController : NetworkBehaviour
         TeamIDCounter = 1;
     }
 
-    public UnityAction MatchStart;
-    public UnityAction MatchEnd;
+    public event UnityAction MatchStart;
+    public event UnityAction MatchEnd;
 
-    public UnityAction SvMatchStart;
-    public UnityAction SvMatchEnd;
+    public event UnityAction SvMatchStart;
+    public event UnityAction SvMatchEnd;
 
     [SerializeField] private MatchMemberSpawner m_Spawner;
     [SerializeField] private float m_DelayAfterSpawnBeforeStartMatch = 0.5f;
